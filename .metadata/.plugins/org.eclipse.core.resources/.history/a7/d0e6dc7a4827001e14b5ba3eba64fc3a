@@ -1,0 +1,143 @@
+package ahorcado;
+
+import javax.swing.*;
+
+class Ahorcado {
+
+	public static void main(String[] args) {
+		
+		String nombre;
+		int palabra_elegida, cant_intentos = 6, juego, apuesta = 0, usuario, n;
+		String[] palabras = { "deporte", "burbuja", "caminar", "escuela", "perfume" };
+
+		String[] progreso_palabra = { "_", "_", "_", "_", "_", "_", "_" };
+		String letra;
+		String[][] letras = { { "d", "e", "p", "o", "r", "t", "e" }, { "b", "u", "r", "b", "u", "j", "a" },
+				{ "c", "a", "m", "i", "n", "a", "r" }, { "e", "s", "c", "u", "e", "l", "a" },
+				{ "p", "e", "r", "f", "u", "m", "e" }, };
+		nombre = JOptionPane.showInputDialog("Ingrese su nombre");
+		do {
+			apuesta = Integer.parseInt(JOptionPane.showInputDialog("Ingrese apuesta entre 0-100"));
+		} while (apuesta > 100);
+		JOptionPane.showMessageDialog(null, "Pulsa Ok, para elegir a que juego deseas jugar.", "Juegos",
+				JOptionPane.DEFAULT_OPTION, new ImageIcon(Ahorcado.class.getResource("/img/juego.png")));
+		juego = Integer.parseInt(
+				JOptionPane.showInputDialog("Ingrese que juego deseas jugar: \n 1- Ahorcado \n 2-Adivina el numero"));
+		switch (juego) {
+		case 1:
+			palabra_elegida = (int) (Math.random() * palabras.length);
+			JOptionPane.showMessageDialog(null, "Bienvenido : " + nombre
+					+ "\n En este juego hay una palabra secreta, la cual tendras que adivinar. \n A medida que vas probando las letras "
+					+ "van bajando los intentos. \n Tienes 6 intentos para completar, a medida que vas perdiendo intentos el personaje va completando partes de su cuerpo. "
+					+ "\n Si ganas se duplica la apuesta.", "Bienvenida", JOptionPane.DEFAULT_OPTION,
+					new ImageIcon(Ahorcado.class.getResource("/img/ahorcado.png")));
+
+			while (cant_intentos > 0 && !juegoGanado(progreso_palabra)) {
+				letra = JOptionPane.showInputDialog(
+						"Palabra a adivinar: " + armarPalabraProgreso(progreso_palabra) + "\nIngresar una letra: ");
+
+				if (armarProgreso(letras, progreso_palabra, letra, palabra_elegida)) {
+					JOptionPane.showMessageDialog(null, "Has Acertado!" + "\nTe quedan " + cant_intentos + " intentos.",
+							"Intentos", JOptionPane.DEFAULT_OPTION, new ImageIcon(Ahorcado.class.getResource("/img/acertaste.jpg")));
+							
+				} else {
+					cant_intentos--;
+					JOptionPane.showMessageDialog(null, "Has errado" + "\nTe quedan " + cant_intentos + " intentos.",
+							"Intentos", JOptionPane.DEFAULT_OPTION,
+							new ImageIcon(Ahorcado.class.getResource("/img/intento" + (6 - cant_intentos) + ".png")));
+
+				}
+
+			}
+
+			if (juegoGanado(progreso_palabra)) {
+
+				apuesta = apuesta * 2;
+				JOptionPane.showMessageDialog(null,
+						"Has ganado!" + "\nLa palabra a adivinar era: " + palabras[palabra_elegida]
+								+ "\n Duplicaste tu apuesta: " + apuesta,
+						"Ganaste", JOptionPane.DEFAULT_OPTION,
+						new ImageIcon(Ahorcado.class.getResource("/img/ganaste.jpg")));
+
+			} else {
+				JOptionPane.showMessageDialog(null,
+						"Has perdido!" + "\nLa palabra a adivinar era: " + palabras[palabra_elegida], "Perdiste",
+						JOptionPane.DEFAULT_OPTION, new ImageIcon(Ahorcado.class.getResource("/img/perdiste.jpg")));
+
+			}
+			break;
+
+		case 2:
+			JOptionPane.showMessageDialog(null,
+					"Bienvenido : " + nombre + " elegiste adivina el numero." + "\n -    Tenes 5 vidas."
+							+ "\n Si el numero que ingresas es igual al de la maquina,"
+							+ "\n duplicas la apuesta y finaliza el juego, sino perdes lo apostado.",
+					"Adivina el numero", JOptionPane.DEFAULT_OPTION,
+					new ImageIcon(Ahorcado.class.getResource("/img/adivinaelnumero.png")));
+
+			for (int i = 1; i <= 5; i++) {
+
+				n = (int) (Math.random() * 10 + 1);
+				usuario = Integer.parseInt(JOptionPane.showInputDialog("Ingresar numero del 1 al 10"));
+				if (n > usuario) {
+					JOptionPane.showMessageDialog(null, "El numero que ingresaste es menor");
+				} else if (usuario > n) {
+					JOptionPane.showMessageDialog(null, "El numero que ingresaste es mayor");
+				} else if (n == usuario) {
+					apuesta = apuesta * 2;
+					JOptionPane.showMessageDialog(null, "Adivinaste el numero" + "\n Duplicaste la apuesta: " + apuesta,
+							"Ganaste", JOptionPane.DEFAULT_OPTION,
+							new ImageIcon(Ahorcado.class.getResource("/img/ganaste.jpg")));
+					i = 5;
+				} else {
+					JOptionPane.showMessageDialog(null, "Error en el ingreso de numero");
+				}
+			}
+			break;
+		default:
+			JOptionPane.showMessageDialog(null, "Error en el ingreso de juego");
+		}
+
+	}
+
+	public static boolean juegoGanado(String[] palabra_a_adivinar) {
+		int i = 0;
+		boolean ganado = true;
+		while (ganado && i < palabra_a_adivinar.length) {
+			if (palabra_a_adivinar[i].equals("_")) {
+				ganado = false;
+			} else {
+				i++;
+			}
+
+		}
+		return ganado;
+
+	}
+
+	public static boolean armarProgreso(String[][] letras, String[] progreso_palabra, String letra,
+			int palabra_elegida) {
+		boolean acertado = false;
+		for (int i = 0; i < progreso_palabra.length; i++) {
+			if (letras[palabra_elegida][i].equals(letra)) {
+				progreso_palabra[i] = letras[palabra_elegida][i];
+				acertado = true;
+			}
+		}
+
+		return acertado;
+
+	}
+
+	public static String armarPalabraProgreso(String[] progreso_palabra) {
+		String palabra_progreso = "";
+		for (int i = 0; i < progreso_palabra.length; i++) {
+			palabra_progreso += progreso_palabra[i];
+			if (i < progreso_palabra.length - 1) {
+				palabra_progreso += " ";
+			}
+		}
+		return palabra_progreso;
+	}
+
+}
